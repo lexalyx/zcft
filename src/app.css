@@ -1,0 +1,108 @@
+:root {
+  --bg: #eef1f4;
+  --sheet: #ffffff;
+  --ink: #1c2b4a;
+  --ink-hover: #2a3d63;
+  --muted: #566176;
+  --rule: #cdd5df;
+  --pen: #1f4fb8;        /* bút bi xanh: phần của sinh viên */
+  --pen-soft: #e8eefb;
+  --stamp: #b42318;      /* con dấu đỏ: phía đối phương */
+  --stamp-soft: #fbeceb;
+  --line: #c9d8f0;       /* dòng kẻ vở */
+  --margin: #e8a8a3;     /* lề đỏ của vở */
+
+  --sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: 1.375rem;
+  --step-3: 1.75rem;
+  --step-4: 2.375rem;
+
+  --radius: 6px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --page: 1240px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Thuộc tính hidden phải thắng mọi display: flex/grid */
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  line-height: 1.55;
+}
+
+h1, h2, h3 { line-height: 1.25; margin: 0; }
+h2 { font-size: var(--step-1); font-weight: 600; }
+a { color: var(--pen); }
+code { font-size: 0.9em; background: var(--bg); padding: 0.1em 0.35em; border-radius: 3px; }
+
+:focus-visible { outline: 3px solid var(--pen); outline-offset: 2px; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.hint { color: var(--muted); font-size: var(--step--1); margin: 0.35rem 0 0; }
+.status { font-size: var(--step--1); color: var(--muted); margin: 0.6rem 0 0; }
+.status.is-error { color: var(--stamp); }
+.status.is-ok { color: var(--pen); }
+
+.btn {
+  font: inherit;
+  font-weight: 500;
+  font-size: var(--step--1);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.95rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  line-height: 1.2;
+}
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--ink-hover); }
+.btn-quiet { background: transparent; color: var(--ink); border-color: var(--rule); }
+.btn-quiet:hover:not(:disabled) { background: var(--sheet); }
+.btn-link {
+  background: none; border: none; padding: 0; color: var(--muted);
+  font: inherit; font-size: var(--step--1); text-decoration: underline; cursor: pointer;
+}
+
+input[type="text"], input[type="password"], select, textarea {
+  font: inherit;
+  color: var(--ink);
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.7rem;
+  width: 100%;
+}
+
+.check { display: flex; gap: 0.5rem; align-items: center; font-weight: 500; }
+.check input { width: 1.05rem; height: 1.05rem; accent-color: var(--ink); }
+
+/* Mã căn cứ trong câu hỏi do Gemini viết (chèn qua {@html} nên phải để ở đây) */
+.cite {
+  font-family: var(--sans);
+  font-size: 0.82em;
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 1px dotted currentColor;
+  cursor: help;
+}
