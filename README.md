@@ -9,6 +9,10 @@ A web page where law students practise three-layer legal argument: national law,
 
 **Privacy:** under the [Gemini API terms](https://ai.google.dev/gemini-api/terms), with a free key Google may use submitted content, including the student's answers, to improve its products, and Google staff may read it. API users must be 18 or older.
 
+## Hướng dẫn sử dụng
+
+Hướng dẫn từng bước có ảnh chụp màn hình: [public/huong-dan/huong-dan-su-dung.md](public/huong-dan/huong-dan-su-dung.md). Trang web hiển thị chính file này ở nút **Hướng dẫn** (cột trái); ảnh nằm cùng thư mục.
+
 ## Lessons
 
 A lesson is an Excel file. Start from `public/mau_bai_hoc.xlsx`; its guide sheet explains each column.

@@ -3,6 +3,7 @@
   import CaseFile from "./components/CaseFile.svelte";
   import DocList from "./components/DocList.svelte";
   import ExportBar from "./components/ExportBar.svelte";
+  import Guide from "./components/Guide.svelte";
   import LessonDialog from "./components/LessonDialog.svelte";
   import NodeCard from "./components/NodeCard.svelte";
   import SettingsDialog from "./components/SettingsDialog.svelte";
@@ -12,11 +13,14 @@
   import { errorMessage, library, LOCAL_PREFIX, session, settings, settingsDialog } from "./lib/state.svelte";
   import type { Lesson } from "./lib/types";
 
+  const GUIDE_HASH = "#huong-dan";
+
   let lessons = $state<LessonEntry[]>([]);
   let selected = $state("");
   let pageStatus = $state("Đang mở bài học…");
   let indexLoaded = $state(false);
   let adding = $state(false);
+  let guide = $state(location.hash === GUIDE_HASH);
 
   let docById = $derived(new Map((session.lesson?.van_ban ?? []).map((d) => [d.id, d])));
 
@@ -40,6 +44,7 @@
   }
 
   async function selectLesson(value: string) {
+    if (guide) location.hash = "";
     if (value.startsWith(LOCAL_PREFIX)) {
       const entry = library.entries.find((e) => LOCAL_PREFIX + e.id === value);
       if (entry) show(entry.lesson, entry.warnings, value);
@@ -84,8 +89,10 @@
   });
 </script>
 
+<svelte:window onhashchange={() => (guide = location.hash === GUIDE_HASH)} />
+
 <div class="shell">
-  <Sidebar {lessons} {selected} onselect={selectLesson} onadd={() => (adding = true)} onremove={removeSaved} onsettings={() => settingsDialog.show()} />
+  <Sidebar {lessons} selected={guide ? "" : selected} guideHref={GUIDE_HASH} guideOpen={guide} onselect={selectLesson} onadd={() => (adding = true)} onremove={removeSaved} onsettings={() => settingsDialog.show()} />
 
   <div class="page">
     <main>
@@ -101,47 +108,50 @@
         </div>
       {/if}
 
-      {#if pageStatus}
-        <p class="loading" role="status">{pageStatus}</p>
-      {:else if indexLoaded && !session.lesson}
-        <div class="notice">
-          <p>Chưa có bài học nào.</p>
-          <button type="button" class="btn btn-primary" onclick={() => (adding = true)}>Thêm bài học</button>
-        </div>
-      {/if}
-
-      {#if session.lesson}
-        <div class="workspace" class:is-analyzed={session.retrievedIds !== null}>
-          <div class="side">
-            <CaseFile lesson={session.lesson} />
-            <DocList />
+      {#if guide}<Guide />{/if}
+      <div hidden={guide}>
+        {#if pageStatus}
+          <p class="loading" role="status">{pageStatus}</p>
+        {:else if indexLoaded && !session.lesson}
+          <div class="notice">
+            <p>Chưa có bài học nào.</p>
+            <button type="button" class="btn btn-primary" onclick={() => (adding = true)}>Thêm bài học</button>
           </div>
+        {/if}
 
-          {#if session.retrievedIds !== null}
-            <section class="arena" aria-labelledby="arena-title">
-              <header>
-                <h2 id="arena-title">Mắt xích phía đối phương sẽ tấn công</h2>
-                <p class="hint">Lập luận cần đủ 3 lớp: pháp luật quốc gia, điều ước hoặc chuẩn mực quốc tế, giải pháp hòa giải.</p>
-                {#if session.challengesError}<p class="status is-error" role="alert">{session.challengesError}</p>{/if}
-              </header>
+        {#if session.lesson}
+          <div class="workspace" class:is-analyzed={session.retrievedIds !== null}>
+            <div class="side">
+              <CaseFile lesson={session.lesson} />
+              <DocList />
+            </div>
 
-              {#key session.lessonKey}
-                {#each session.nodes as id, i (id)}
-                  {@const doc = docById.get(id)}
-                  {#if doc}<NodeCard {doc} rank={i + 1} />{/if}
-                {:else}
-                  <p class="hint">
-                    Không có văn bản nào đạt ngưỡng rủi ro {session.lesson.settings.threshold.toFixed(2)}. Giảng viên có thể hạ “Ngưỡng rủi ro” trong
-                    trang Thông tin của file Excel.
-                  </p>
-                {/each}
-              {/key}
+            {#if session.retrievedIds !== null}
+              <section class="arena" aria-labelledby="arena-title">
+                <header>
+                  <h2 id="arena-title">Mắt xích phía đối phương sẽ tấn công</h2>
+                  <p class="hint">Lập luận cần đủ 3 lớp: pháp luật quốc gia, điều ước hoặc chuẩn mực quốc tế, giải pháp hòa giải.</p>
+                  {#if session.challengesError}<p class="status is-error" role="alert">{session.challengesError}</p>{/if}
+                </header>
 
-              <ExportBar />
-            </section>
-          {/if}
-        </div>
-      {/if}
+                {#key session.lessonKey}
+                  {#each session.nodes as id, i (id)}
+                    {@const doc = docById.get(id)}
+                    {#if doc}<NodeCard {doc} rank={i + 1} />{/if}
+                  {:else}
+                    <p class="hint">
+                      Không có văn bản nào đạt ngưỡng rủi ro {session.lesson.settings.threshold.toFixed(2)}. Giảng viên có thể hạ “Ngưỡng rủi ro” trong
+                      trang Thông tin của file Excel.
+                    </p>
+                  {/each}
+                {/key}
+
+                <ExportBar />
+              </section>
+            {/if}
+          </div>
+        {/if}
+      </div>
     </main>
 
     <footer>

@@ -1,6 +1,7 @@
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import { marked } from "marked";
 import type { Plugin } from "vite";
 import { defineConfig } from "vitest/config";
 
@@ -33,10 +34,30 @@ function lessonIndex(): Plugin {
   };
 }
 
+const GUIDE_FILE = resolve(import.meta.dirname, "public/huong-dan/huong-dan-su-dung.md");
+const GUIDE_ID = "virtual:guide";
+
+function guide(): Plugin {
+  return {
+    name: "zcft-guide",
+    resolveId: (id) => (id === GUIDE_ID ? "\0" + GUIDE_ID : null),
+    load(id) {
+      if (id !== "\0" + GUIDE_ID) return null;
+      this.addWatchFile(GUIDE_FILE);
+      const html = marked
+        .parse(readFileSync(GUIDE_FILE, "utf8"), { async: false })
+        // File .md trỏ ảnh cùng thư mục; trên trang, đường dẫn tính từ gốc public/
+        .replaceAll('<img src="', '<img src="huong-dan/')
+        .replaceAll('<a href="http', '<a target="_blank" rel="noopener" href="http');
+      return `export default ${JSON.stringify(html)};`;
+    },
+  };
+}
+
 export default defineConfig({
   // Đường dẫn tương đối để chạy được ở https://<tài-khoản>.github.io/<tên-kho>/ mà không cần biết tên kho
   base: "./",
-  plugins: [svelte(), lessonIndex()],
+  plugins: [svelte(), lessonIndex(), guide()],
   build: {
     // ExcelJS (~930 KB) đã được tách thành file riêng và chỉ tải khi mở bài học, nên chấp nhận kích thước này
     chunkSizeWarningLimit: 1000,

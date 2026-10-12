@@ -10,9 +10,11 @@
     onadd: () => void;
     onremove: (id: string) => void;
     onsettings: () => void;
+    guideHref: string;
+    guideOpen: boolean;
   }
 
-  let { lessons, selected, onselect, onadd, onremove, onsettings }: Props = $props();
+  let { lessons, selected, onselect, onadd, onremove, onsettings, guideHref, guideOpen }: Props = $props();
 
   let open = $state(false);
 
@@ -74,7 +76,10 @@
     <button type="button" class="btn btn-quiet" onclick={() => run(onadd)}>Thêm bài học</button>
   </nav>
 
-  <button type="button" class="btn btn-quiet" onclick={() => run(onsettings)}>Cài đặt</button>
+  <div class="foot">
+    <a class="btn btn-quiet" href={guideHref} aria-current={guideOpen ? "page" : undefined} onclick={() => (open = false)}>Hướng dẫn</a>
+    <button type="button" class="btn btn-quiet" onclick={() => run(onsettings)}>Cài đặt</button>
+  </div>
 </aside>
 
 <style>
@@ -108,7 +113,9 @@
   .empty { color: #c8d2e6; font-size: var(--step--1); margin: 0.5rem 0 0; }
   .btn-quiet { color: #fff; border-color: #44567c; justify-content: center; }
   .btn-quiet:hover { background: var(--ink-hover); }
+  .btn-quiet[aria-current] { background: var(--ink-hover); }
   nav .btn { margin-top: 1rem; width: 100%; }
+  .foot { display: grid; gap: 0.5rem; }
   :focus-visible { outline-color: #fff; }
 
   .bar, .backdrop { display: none; }
